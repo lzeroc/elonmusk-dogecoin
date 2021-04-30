@@ -1,0 +1,25 @@
+{
+  "name": "elonmusk-dogecoin",
+  "version": "1.0.0",
+  "description": "当马斯克发推文内容提到狗狗币时，自动在交易所购买",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lzeroc/elonmusk-dogecoin.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lzeroc/elonmusk-dogecoin/issues"
+  },
+  "homepage": "https://github.com/lzeroc/elonmusk-dogecoin#readme",
+  "dependencies": {
+    "ccxt": "^1.49.17",
+    "pm2": "^4.5.6",
+    "puppeteer": "^9.0.0"
+  }
+}
