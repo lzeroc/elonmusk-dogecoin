@@ -4,6 +4,7 @@
   "description": "当马斯克发推文内容提到狗狗币时，自动在交易所购买",
   "main": "index.js",
   "scripts": {
+    "start": "pm2 start index.js --name elonmusk-dogecoin",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -19,6 +20,7 @@
   "homepage": "https://github.com/lzeroc/elonmusk-dogecoin#readme",
   "dependencies": {
     "ccxt": "^1.49.17",
+    "node-schedule": "^2.0.0",
     "pm2": "^4.5.6",
     "puppeteer": "^9.0.0"
   }

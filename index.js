@@ -1,53 +1,48 @@
-// const twitter = require('./twitter');
-const fs = require('fs');
 const puppeteer = require('puppeteer');
+const ccxt = require('ccxt');
+const schedule = require('node-schedule');
 
-(async () => {
-  await sreachTweet('chinesevirus', 10);
-})();
+var { search, apiKey, secret, amount } = require('./config');
 
-async function sreachTweet(keyword, count) {
-  browser = await puppeteer.launch({
-    //如果為true則只在後台運行
-    headless: true,
-    defaultViewport: {
-      width: 1440,
-      height: 1080
-    }
-  });
+const exchange = new ccxt.binance({
+  'apiKey': apiKey,
+  'secret': secret,
+  'timeout': 30000,
+  'enableRateLimit': true,
+});
 
-  let url = `https://twitter.com/search?q=${keyword}%20min_faves%3A200%20lang%3Aen%20until%3A2020-03-24%20since%3A2020-03-17&src=typed_query&f=live`
-  let index = 0;
-  var page = await browser.newPage();
+function run() {
+  //   *    *    *    *    *    *
+  // ┬    ┬    ┬    ┬    ┬    ┬
+  // │    │    │    │    │    │
+  // │    │    │    │    │    └ day of week (0 - 7) (0 or 7 is Sun)
+  // │    │    │    │    └───── month (1 - 12)
+  // │    │    │    └────────── day of month (1 - 31)
+  // │    │    └─────────────── hour (0 - 23)
+  // │    └──────────────────── minute (0 - 59)
+  // └───────────────────────── second (0 - 59, OPTIONAL)
+  const rule = '* 1 * * * ';
+  schedule.scheduleJob(rule, async () => {
+    const browser = await puppeteer.launch({
+      headless: true
+    });
+    const page = await browser.newPage();
+    await page.goto('https://twitter.com/elonmusk');
 
-  await page.goto(url);
-  //等待目標元素
-  await page.waitFor('div[data-testid="tweet"]');
-  let tweets = [];
+    await page.waitForSelector('article');
 
-  while (tweets.length < count) {//當前頁數少於count則繼續
-    //滾到頁底,觸發lazyloading
-    await page.evaluate('window.scrollTo(0,document.body.scrollHeight)');
-    await page.waitFor(3000);
-    let tweetsArray = await page.$$('div[data-testid="tweet"]>div.r-1mi0q7o');
-    console.log(tweetsArray);
-
+    let tweetsArray = await page.$$('div[data-testid="tweet"]');
     for (let tweetElement of tweetsArray) {
-      index++
-      let userName = await tweetElement.$eval('span>span', element => element.innerText);
-      let userID = await tweetElement.$eval('div>span', element => element.innerText);
-      let Time = await tweetElement.$eval('a[title]', element => element.getAttribute('title'));
-      let Content = await tweetElement.$$eval('div+div>div>div>span', element => element.map(data => data.innerText));
-      tweets.push({
-        index,
-        userName,
-        userID,
-        Time,
-        Content
-      });
+      let content = await tweetElement.$$eval('div+div>div>div>span', element => element.map(data => data.innerText));
+      for (let keyword of search) {
+        if (content.indexOf(keyword) != 1) {
+          // buy doge
+          exchange.createOrder('DOGE/USDT', 'market', 'buy', amount);
+        }
+      }
     }
-    //以追加模式寫入tweets.json文件
-    fs.writeFileSync('./tweets.json', JSON.stringify(tweets), { flag: 'a' }, 'utf-8');
-  }
-  return tweets;
+    await browser.close();
+  });
 }
+
+run();
