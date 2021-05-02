@@ -4,8 +4,15 @@
 When Musk tweeted that Dogecoin was mentioned, it was automatically purchased on the exchange
 
 # run
+## start
 - npm i
 - npm run start
+
+## restart
+- npm run restart
+
+## stop
+- npm run stop
 
 # config update (open config.js)
 - binance apiKey

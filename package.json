@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "pm2 start index.js --name elonmusk-dogecoin",
+    "stop": "pm2 stop elonmusk-dogecoin",
+    "restart": "pm2 restart elonmusk-dogecoin",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
