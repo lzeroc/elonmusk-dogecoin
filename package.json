@@ -20,6 +20,7 @@
   "homepage": "https://github.com/lzeroc/elonmusk-dogecoin#readme",
   "dependencies": {
     "ccxt": "^1.49.17",
+    "lowdb": "^1.0.0",
     "node-schedule": "^2.0.0",
     "pm2": "^4.5.6",
     "puppeteer": "^9.0.0"

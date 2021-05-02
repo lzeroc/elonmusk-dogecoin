@@ -3,14 +3,15 @@ var search = [ // search keyword
     "dogecoin"
 ];
 
-var apiKey = ''; // binance apiKey
-var secret = ''; // binance secret
+var binance = {
+    apiKey: '', // binance apiKey
+    secret: '', // binance secret
+}
 
 var amount = 1000; // buy doge
 
 module.exports = {
     search,
-    apiKey,
-    secret,
+    binance,
     amount,
 }

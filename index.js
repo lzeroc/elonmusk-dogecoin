@@ -1,12 +1,17 @@
 const puppeteer = require('puppeteer');
 const ccxt = require('ccxt');
 const schedule = require('node-schedule');
+const low = require('lowdb');
+const FileSync = require('lowdb/adapters/FileSync');
+let adapter = new FileSync('db.json');
+let db = low(adapter);
+db.defaults({ orderRecord: [] }).write();
 
-var { search, apiKey, secret, amount } = require('./config');
+var { search, binance, amount } = require('./config');
 
 const exchange = new ccxt.binance({
-  'apiKey': apiKey,
-  'secret': secret,
+  'apiKey': binance.apiKey,
+  'secret': binance.secret,
   'timeout': 30000,
   'enableRateLimit': true,
 });
@@ -21,7 +26,7 @@ function run() {
   // │    │    └─────────────── hour (0 - 23)
   // │    └──────────────────── minute (0 - 59)
   // └───────────────────────── second (0 - 59, OPTIONAL)
-  const rule = '* 1 * * * ';
+  const rule = '*/1 * * * *';
   schedule.scheduleJob(rule, async () => {
     const browser = await puppeteer.launch({
       headless: true
@@ -36,8 +41,17 @@ function run() {
       let content = await tweetElement.$$eval('div+div>div>div>span', element => element.map(data => data.innerText));
       for (let keyword of search) {
         if (content.indexOf(keyword) != 1) {
-          // buy doge
-          exchange.createOrder('DOGE/USDT', 'market', 'buy', amount);
+          let tempOrderRecord = db.get('orderRecord')
+            .find({
+              content: content,
+            }).value();
+          if (!tempOrderRecord) {
+            db.get('orderRecord').push({
+              content: content,
+            }).write();
+            // buy doge
+            exchange.createOrder('DOGE/USDT', 'market', 'buy', amount);
+          }
         }
       }
     }
